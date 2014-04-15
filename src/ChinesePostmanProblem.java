@@ -1,11 +1,13 @@
 
 
 
-import algorithms.Greedy;
+import genetic.Genetic;
+import greedy.Greedy;
 import graphs.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class ChinesePostmanProblem {
 
@@ -13,9 +15,13 @@ public class ChinesePostmanProblem {
         String path = args[0];
         WeightedGraphBuilder builder = new WeightedGraphBuilder(new File("instances\\basic5.txt"));
         SparseGraph sg = builder.build();
-        Greedy alg = new Greedy(sg);
+        /*
+        Greedy alg = new Greedy(sg);        
         alg.perform();
-        alg.printOut();
+        alg.printOut();**/
+        Genetic alg = new Genetic(sg);
+        alg.perform();
+        //alg.printOut(output);
     }
     
 }

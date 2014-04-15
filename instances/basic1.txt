@@ -5,15 +5,15 @@ d
 e
 f
 #
-a b
-a c
-b a
-b d
-c a
-c e
-d b
-d f
-e c
-e f
-f e
-f d
+a b 1
+a c 3
+b a 1
+b d 10
+c a 3
+c e 4
+d b 10
+d f 2
+e c 4
+e f 5
+f e 5
+f d 2
