@@ -1,6 +1,7 @@
 
 
 
+import genetic.Chromossome;
 import genetic.Genetic;
 import greedy.Greedy;
 import graphs.*;
@@ -20,7 +21,20 @@ public class ChinesePostmanProblem {
         alg.perform();
         alg.printOut();**/
         Genetic alg = new Genetic(sg);
-        alg.perform();
+       // alg.perform();
+        ArrayList<String> l = new ArrayList<>();
+        l.add("a");
+        l.add("b");
+        l.add("g");
+        l.add("b");
+        l.add("g");
+        l.add("f");
+        l.add("d");
+         l.add("g");
+        l.add("f");
+        l.add("d");
+        l.add("a");
+        Chromossome ch = new Chromossome(l, sg);
         //alg.printOut(output);
     }
     

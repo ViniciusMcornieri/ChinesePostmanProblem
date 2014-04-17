@@ -10,5 +10,4 @@ public class Couple {
         this.mom = mom;
     }
     
-    FAZER REDUNDANCIA
 }
