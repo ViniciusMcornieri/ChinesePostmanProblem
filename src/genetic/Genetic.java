@@ -9,11 +9,15 @@ import java.util.Random;
 public class Genetic {
 
     public SparseGraph sg;
+    public float mutatePercent;
     public ArrayList<Chromossome> population;
+    public int nPop;
 
-    public Genetic(SparseGraph sg) {
+    public Genetic(SparseGraph sg, float mutatePercent, int nPop) {
         this.sg = sg;
         this.population = new ArrayList();
+        this.mutatePercent = mutatePercent;
+        this.nPop = nPop;
     }
 
     private void invalidate(String beginKey, String endKey) {
@@ -32,94 +36,73 @@ public class Genetic {
             }
         }
     }
-    
-    public void populate(int nChromo){
-        Chromossome chromo; 
+
+    public void populate(int nChromo) {
+        Chromossome chromo;
         for (int i = 0; i < nChromo; i++) {
             chromo = new Chromossome(sg);
             this.population.add(chromo);
-        }    
+        }
     }
-    
-    public ArrayList<Couple> selection(){
+
+    public ArrayList<Couple> selection() {
         Chromossome dad, mom;
         ArrayList<Couple> couples = new ArrayList();
         Collections.sort(population);
-        for (int i = 0; i < (population.size() >> 1); i+=2) {
+        for (int i = 0; i < (population.size() >> 1); i += 2) {
             dad = population.get(i);
-            mom = population.get(i+1);
-            couples.add(new Couple(dad, mom));
+            mom = population.get(i + 1);
+            couples.add(new Couple(dad, mom, mutatePercent));
         }
         return couples;
     }
 
-    public ArrayList<String> generateChromo() {
-        boolean found;
-        String father;
-        BFS bfs = new BFS(sg);
-        Random rd = new Random();
-        //rd.setSeed(17);
-        for (String key : sg.getKeys()) {
-            for (Edge edge : sg.getAdj(key)) {
-                edge.setActive(true);
-            }
-        }
-        int size = sg.edgeSet.size();
-        Edge e = sg.edgeSet.get(rd.nextInt(size));
-        ArrayList<String> chromo = randomVisit(e.getBeginKey());
-        String first = chromo.get(0);
-        String last = chromo.get(chromo.size() - 1);
-        if (!first.equals(last)) {
-            sg.startKey = first;
-            bfs.perform();
-            found = false;
-            father = last;
-            while (!found) {
-                father = sg.getVertex(father).father;
-                chromo.add(father);
-                if (father.equals(first)) {
-                    found = true;
-                }
-            }
-        }
-        return chromo;
-    }
+    public void perform() {
+        this.populate(nPop);
+        while (this.population.size() != 1) {
 
-    private ArrayList<String> randomVisit(String startKey) {
-        ArrayList<String> route = new ArrayList();
-        ArrayList<String> valides;
-        int id;
-        String adj, key;
-        key = startKey;
-        Random rd = new Random();
-        //rd.setSeed(17);
-        boolean stop = false;
-        while (!stop) {
-            valides = new ArrayList();
-            route.add(key);
-            for (Edge edge : sg.getAdj(key)) {
-                if (edge.isActive()) {
-                    valides.add(edge.getEndKey());
-                }
+            //while(not cond parada)
+            ArrayList<Couple> couples = this.selection();
+
+            for (Couple couple : couples) {
+                population.addAll(couple.getChildren(sg));
             }
-            if (!valides.isEmpty()) {
-                id = rd.nextInt(valides.size());
-                adj = valides.get(id);
-                invalidate(key, adj);
-                key = adj;                
-            } else {
-                stop = true;
-            }
-        }      //rd.setSeed(17);
-        return route;
-    }
-    
-    public void perform(){
-        this.populate(30);
-        //while(not cond parada)
-        this.selection();
+            removeTwins();
+        }
+        System.out.println("");
         //this.crossover();
         //this.mutate();        
+    }
+
+    public void removeTwins() {
+        Collections.sort(population);
+        for (int i = 0; i < population.size(); i++) {
+            for (int j = i + 1; j < population.size(); j++) {
+                Chromossome chromo1;
+                Chromossome chromo2;
+                chromo1 = population.get(i);
+                chromo2 = population.get(j);
+                if (compareMissEdges(chromo1, chromo2)) {
+                    population.remove(j);
+                }
+            }
+        }
+    }
+
+    public boolean compareMissEdges(Chromossome chromo1, Chromossome chromo2) {
+        int quantity = 0;
+        if (chromo1.getFitness() == chromo2.getFitness()
+                && chromo1.missEdges.size() == chromo2.missEdges.size()) {
+
+            for (Edge edge1 : chromo1.missEdges) {
+                for (Edge edge2 : chromo2.missEdges) {
+                    if (edge1.equals(edge2)) {
+                        quantity++;
+                    }
+                }
+            }
+        }
+        return chromo1.missEdges.size() == quantity;
     }
 
     public void printOut(ArrayList<String> output) {

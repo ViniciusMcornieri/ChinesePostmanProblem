@@ -5,52 +5,90 @@ import graphs.*;
 import java.util.ArrayList;
 import java.util.Random;
 
-public final class Chromossome implements Comparable<Chromossome> {
-
+public class Chromossome implements Comparable<Chromossome> {
+    
     private int costWay;
     private int fitness;
-    private ArrayList<Edge> missEdges;
-    private ArrayList<String> chromo;
-
+    public ArrayList<Edge> missEdges;
+    public ArrayList<String> chromo;
+    
     public Chromossome(SparseGraph sg) {
         this.chromo = this.generateChromo(sg);
         this.costWay = 0;
         this.missEdges = new ArrayList<>();
-        removeRedundancy();
+        //removeRedundancy();
         calculateCostWayMissEdges(sg);
         this.fitness = fitness();
     }
-
-    public Chromossome(ArrayList<String> chromo, SparseGraph sg) {
+    
+    public Chromossome(ArrayList<String> chromo, SparseGraph sg, float percent) {
         this.chromo = chromo;
         this.costWay = 0;
         this.missEdges = new ArrayList<>();
         removeRedundancy();
         calculateCostWayMissEdges(sg);
+        if (percent * 100 > new Random().nextInt(100)) {
+            mutate();
+            calculateCostWayMissEdges(sg);
+        }        
         this.fitness = fitness();
     }
-
+    
+    private void mutate() {
+        Random rd = new Random();
+        int size = missEdges.size();
+        if (size != 0) {
+            Edge edge = missEdges.get(rd.nextInt(size));
+            int i = 0;
+            boolean stop = false;
+            while (!stop) {
+                if (i == chromo.size()) {
+                    stop = true;
+                } else if (chromo.get(i).equals(edge.getBeginKey())) {
+                    stop = true;
+                    chromo.add(i, edge.getEndKey());
+                    chromo.add(i, edge.getBeginKey());
+                } else if (chromo.get(i).equals(edge.getEndKey())) {
+                    stop = true;
+                    chromo.add(i, edge.getBeginKey());
+                    chromo.add(i, edge.getEndKey());
+                }
+                i++;
+            }
+        }
+        
+    }
+    
+    public int getIndex(String key) {
+        for (int i = 0; i < chromo.size(); i++) {
+            if (chromo.get(i).equals(key)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
     public int getFitness() {
         return fitness;
     }
-
+    
     private int fitness() {
         int ft = 0;
         ft = (this.missEdges.size() + 1) * this.costWay;
         return ft;
     }
-
+    
     private void calculateCostWayMissEdges(SparseGraph sg) {
         String a, b;
         Edge e;
         int way = 0;
-
+        
         for (String s : sg.getKeys()) {
             for (Edge edge : sg.getAdj(s)) {
                 edge.setActive(true);
             }
         }
-
+        
         for (int i = 0; i < chromo.size() - 1; i++) {
             a = chromo.get(i);
             b = chromo.get(i + 1);
@@ -59,7 +97,7 @@ public final class Chromossome implements Comparable<Chromossome> {
             way += e.getWeight();
         }
         this.costWay = way;
-
+        
         for (String s : sg.getKeys()) {
             for (Edge edge : sg.getAdj(s)) {
                 if (edge.isActive()) {
@@ -68,7 +106,7 @@ public final class Chromossome implements Comparable<Chromossome> {
             }
         }
     }
-
+    
     public ArrayList<String> generateChromo(SparseGraph sg) {
         boolean found;
         String father;
@@ -100,7 +138,7 @@ public final class Chromossome implements Comparable<Chromossome> {
         }
         return chromo;
     }
-
+    
     private ArrayList<String> randomVisit(String startKey, SparseGraph sg) {
         ArrayList<String> route = new ArrayList();
         ArrayList<String> valides;
@@ -129,12 +167,12 @@ public final class Chromossome implements Comparable<Chromossome> {
         }      //rd.setSeed(17);
         return route;
     }
-
+    
     public void removeRedundancy() {
         ArrayList<String> firstList;
         ArrayList<String> compareList;
         ArrayList<String> notRedundancy;
-        int comparePoint = 0;
+        int comparePoint;
         for (int j = 0; j < chromo.size(); j++) {
             firstList = new ArrayList();
             compareList = new ArrayList();
@@ -142,7 +180,7 @@ public final class Chromossome implements Comparable<Chromossome> {
             comparePoint = 0;
             notRedundancy.addAll(chromo.subList(0, j));
             for (int i = j; i < chromo.size(); i++) {
-                if (firstList.size() == 0) {
+                if (firstList.isEmpty()) {
                     firstList.add(chromo.get(i));
                 } else if (chromo.get(i).equals(firstList.get(comparePoint))) {
                     compareList.add(chromo.get(i));
@@ -167,7 +205,7 @@ public final class Chromossome implements Comparable<Chromossome> {
             chromo = notRedundancy;
         }
     }
-
+    
     @Override
     public int compareTo(Chromossome chromo) {
         if (this.fitness <= chromo.fitness) {
@@ -175,5 +213,5 @@ public final class Chromossome implements Comparable<Chromossome> {
         }
         return 1;
     }
-
+    
 }

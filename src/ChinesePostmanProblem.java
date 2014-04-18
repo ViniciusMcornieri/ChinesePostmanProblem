@@ -20,21 +20,8 @@ public class ChinesePostmanProblem {
         Greedy alg = new Greedy(sg);        
         alg.perform();
         alg.printOut();**/
-        Genetic alg = new Genetic(sg);
-       // alg.perform();
-        ArrayList<String> l = new ArrayList<>();
-        l.add("a");
-        l.add("b");
-        l.add("g");
-        l.add("b");
-        l.add("g");
-        l.add("f");
-        l.add("d");
-         l.add("g");
-        l.add("f");
-        l.add("d");
-        l.add("a");
-        Chromossome ch = new Chromossome(l, sg);
+        Genetic alg = new Genetic(sg, (float) 0.1, 30);
+        alg.perform();
         //alg.printOut(output);
     }
     
