@@ -1,10 +1,8 @@
 package genetic;
 
-import algorithms.BFS;
 import graphs.*;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
 
 public class Genetic {
 
@@ -12,29 +10,14 @@ public class Genetic {
     public float mutatePercent;
     public ArrayList<Chromossome> population;
     public int nPop;
+    private long time;
 
     public Genetic(SparseGraph sg, float mutatePercent, int nPop) {
         this.sg = sg;
         this.population = new ArrayList();
         this.mutatePercent = mutatePercent;
         this.nPop = nPop;
-    }
-
-    private void invalidate(String beginKey, String endKey) {
-        Edge ab = null;
-        for (Edge edge : sg.getAdj(beginKey)) {
-            if (edge.getEndKey().equals(endKey)) {
-                ab = edge;
-            }
-        }
-        if (ab.isActive()) {
-            ab.setActive(false);
-            for (Edge ba : sg.getAdj(ab.getEndKey())) {
-                if (ba.getEndKey().equals(ab.getBeginKey())) {
-                    ba.setActive(false);
-                }
-            }
-        }
+        this.time =  System.currentTimeMillis();
     }
 
     public void populate(int nChromo) {
@@ -60,18 +43,13 @@ public class Genetic {
     public void perform() {
         this.populate(nPop);
         while (this.population.size() != 1) {
-
-            //while(not cond parada)
             ArrayList<Couple> couples = this.selection();
-
             for (Couple couple : couples) {
                 population.addAll(couple.getChildren(sg));
             }
             removeTwins();
-        }
-        System.out.println("");
-        //this.crossover();
-        //this.mutate();        
+            
+        }       
     }
 
     public void removeTwins() {
@@ -82,27 +60,24 @@ public class Genetic {
                 Chromossome chromo2;
                 chromo1 = population.get(i);
                 chromo2 = population.get(j);
-                if (compareMissEdges(chromo1, chromo2)) {
+                if (compareChromos(chromo1, chromo2)) {
                     population.remove(j);
                 }
             }
         }
     }
 
-    public boolean compareMissEdges(Chromossome chromo1, Chromossome chromo2) {
-        int quantity = 0;
-        if (chromo1.getFitness() == chromo2.getFitness()
-                && chromo1.missEdges.size() == chromo2.missEdges.size()) {
-
-            for (Edge edge1 : chromo1.missEdges) {
-                for (Edge edge2 : chromo2.missEdges) {
-                    if (edge1.equals(edge2)) {
-                        quantity++;
-                    }
-                }
+    public boolean compareChromos(Chromossome chromo1, Chromossome chromo2) {
+        if (chromo1.getFitness() != chromo2.getFitness()
+                || chromo1.missEdges.size() != chromo2.missEdges.size()) {
+            return false;
+        }
+        for (int i = 0; i < chromo1.chromo.size(); i++) {
+            if (!chromo1.chromo.get(i).equals(chromo2.chromo.get(i))) {
+                return false;
             }
         }
-        return chromo1.missEdges.size() == quantity;
+        return true;
     }
 
     public void printOut(ArrayList<String> output) {
