@@ -5,10 +5,10 @@ import graphs.*;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Chromossome implements Comparable<Chromossome> {
+public final class Chromossome implements Comparable<Chromossome> {
     
     private int costWay;
-    private int fitness;
+    private final int fitness;
     public ArrayList<Edge> missEdges;
     public ArrayList<String> chromo;
     

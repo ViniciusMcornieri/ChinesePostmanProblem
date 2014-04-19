@@ -6,18 +6,18 @@ import java.util.Collections;
 
 public class Genetic {
 
-    public SparseGraph sg;
-    public float mutatePercent;
-    public ArrayList<Chromossome> population;
-    public int nPop;
-    private long time;
+    private final SparseGraph sg;
+    private final float MUTATE_PERCENT;
+    private ArrayList<Chromossome> population;
+    private final int N_POP;
+    private final long START_TIME;
 
     public Genetic(SparseGraph sg, float mutatePercent, int nPop) {
         this.sg = sg;
         this.population = new ArrayList();
-        this.mutatePercent = mutatePercent;
-        this.nPop = nPop;
-        this.time =  System.currentTimeMillis();
+        this.MUTATE_PERCENT = mutatePercent;
+        this.N_POP = nPop;
+        this.START_TIME = System.currentTimeMillis();
     }
 
     public void populate(int nChromo) {
@@ -31,29 +31,72 @@ public class Genetic {
     public ArrayList<Couple> selection() {
         Chromossome dad, mom;
         ArrayList<Couple> couples = new ArrayList();
-        Collections.sort(population);
+       try {
+            Collections.sort(population);
+        } catch (Exception e) {
+            System.out.println("Selection Deu esse pau no role da ordenação--->" + e.getMessage());
+        }
         for (int i = 0; i < (population.size() >> 1); i += 2) {
             dad = population.get(i);
             mom = population.get(i + 1);
-            couples.add(new Couple(dad, mom, mutatePercent));
+            couples.add(new Couple(dad, mom, MUTATE_PERCENT));
         }
         return couples;
     }
 
+    public long actualTime() {
+        long actual = System.currentTimeMillis();
+        return ((actual - START_TIME) / 60000);//in minutes
+    }
+
+    private boolean stopCondicion(int time) {
+        try {
+            Collections.sort(population);
+        } catch (Exception e) {
+            System.out.println("StopCondicion Deu esse pau no role da ordenação--->" + e.getMessage());
+        }
+        if (actualTime() > time 
+                && this.population.get(0).missEdges.isEmpty()) {
+            return true;
+        } else {
+            int media = 0;
+            for (int i = 0; i < 5; i++) {
+                media += population.get(i).getFitness();
+            }
+            media = media / 5;
+            if (media == population.get(0).getFitness() 
+                    && this.population.get(0).missEdges.isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void perform() {
-        this.populate(nPop);
-        while (this.population.size() != 1) {
-            ArrayList<Couple> couples = this.selection();
+        this.populate(N_POP);
+        ArrayList<Couple> couples;
+        while (!stopCondicion(1)) {
+            couples = this.selection();
             for (Couple couple : couples) {
                 population.addAll(couple.getChildren(sg));
             }
+            System.out.println("");
             removeTwins();
-            
-        }       
+            Collections.sort(population);
+            while (population.size() > N_POP) {
+                population.remove(population.size() - 1);
+            }
+        }
+        System.out.println(actualTime() + " mins!!");
+        System.out.println("");
     }
 
     public void removeTwins() {
-        Collections.sort(population);
+        try {
+            Collections.sort(population);
+        } catch (Exception e) {
+            System.out.println("removeTwins Deu esse pau no role da ordenação--->" + e.getMessage());
+        }
         for (int i = 0; i < population.size(); i++) {
             for (int j = i + 1; j < population.size(); j++) {
                 Chromossome chromo1;
