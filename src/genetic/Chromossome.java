@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public final class Chromossome implements Comparable<Chromossome> {
-    
+
     private int costWay;
     private final int fitness;
     public ArrayList<Edge> missEdges;
     public ArrayList<String> chromo;
-    
+
     public Chromossome(SparseGraph sg) {
         this.chromo = this.generateChromo(sg);
         this.costWay = 0;
@@ -20,7 +20,7 @@ public final class Chromossome implements Comparable<Chromossome> {
         calculateCostWayMissEdges(sg);
         this.fitness = fitness();
     }
-    
+
     public Chromossome(ArrayList<String> chromo, SparseGraph sg, float percent) {
         this.chromo = chromo;
         this.costWay = 0;
@@ -30,10 +30,10 @@ public final class Chromossome implements Comparable<Chromossome> {
         if (percent * 100 > new Random().nextInt(100)) {
             mutate();
             calculateCostWayMissEdges(sg);
-        }        
+        }
         this.fitness = fitness();
     }
-    
+
     private void mutate() {
         Random rd = new Random();
         int size = missEdges.size();
@@ -56,9 +56,9 @@ public final class Chromossome implements Comparable<Chromossome> {
                 i++;
             }
         }
-        
+
     }
-    
+
     public int getIndex(String key) {
         for (int i = 0; i < chromo.size(); i++) {
             if (chromo.get(i).equals(key)) {
@@ -67,28 +67,28 @@ public final class Chromossome implements Comparable<Chromossome> {
         }
         return -1;
     }
-    
+
     public int getFitness() {
         return fitness;
     }
-    
+
     private int fitness() {
         int ft = 0;
         ft = (this.missEdges.size() + 1) * this.costWay;
         return ft;
     }
-    
+
     private void calculateCostWayMissEdges(SparseGraph sg) {
         String a, b;
         Edge e;
         int way = 0;
-        
+
         for (String s : sg.getKeys()) {
             for (Edge edge : sg.getAdj(s)) {
                 edge.setActive(true);
             }
         }
-        
+
         for (int i = 0; i < chromo.size() - 1; i++) {
             a = chromo.get(i);
             b = chromo.get(i + 1);
@@ -97,7 +97,7 @@ public final class Chromossome implements Comparable<Chromossome> {
             way += e.getWeight();
         }
         this.costWay = way;
-        
+
         for (String s : sg.getKeys()) {
             for (Edge edge : sg.getAdj(s)) {
                 if (edge.isActive()) {
@@ -106,7 +106,7 @@ public final class Chromossome implements Comparable<Chromossome> {
             }
         }
     }
-    
+
     public ArrayList<String> generateChromo(SparseGraph sg) {
         boolean found;
         String father;
@@ -138,7 +138,7 @@ public final class Chromossome implements Comparable<Chromossome> {
         }
         return chromo;
     }
-    
+
     private ArrayList<String> randomVisit(String startKey, SparseGraph sg) {
         ArrayList<String> route = new ArrayList();
         ArrayList<String> valides;
@@ -167,7 +167,7 @@ public final class Chromossome implements Comparable<Chromossome> {
         }      //rd.setSeed(17);
         return route;
     }
-    
+
     public void removeRedundancy() {
         ArrayList<String> firstList;
         ArrayList<String> compareList;
@@ -205,13 +205,17 @@ public final class Chromossome implements Comparable<Chromossome> {
             chromo = notRedundancy;
         }
     }
-    
+
     @Override
     public int compareTo(Chromossome chromo) {
-        if (this.fitness <= chromo.fitness) {
+        if (this.fitness < chromo.fitness) {
             return -1;
-        }
-        return 1;
-    }
+        } else if (this.fitness > chromo.fitness) {
+            return 1;
+        } else {
+            return 0;
     
+        }
+    }
+
 }

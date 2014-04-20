@@ -75,7 +75,6 @@ public class Couple {
         } while ((i0 - i1 <= 1
                 && i0 - i1 >= -1)
                 || (j0 == j1
-                || j0 * j1 == 0
                 || j0 == mom.chromo.size() - 1
                 || j1 == mom.chromo.size() - 1));
 

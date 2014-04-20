@@ -3,8 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/fzk/NetBeansProjects/CPP/src/ChinesePostmanProblem.java</file>
-            <file>file:/home/fzk/NetBeansProjects/CPP/src/ChinesePostmanProblem/src/algorithms/BFS.java</file>
+            <file>file:/home/fzk/NetBeansProjects/ChinesePostmanProblem/src/genetic/Couple.java</file>
+            <file>file:/home/fzk/NetBeansProjects/ChinesePostmanProblem/src/genetic/Chromossome.java</file>
+            <file>file:/home/fzk/NetBeansProjects/ChinesePostmanProblem/src/genetic/Genetic.java</file>
         </group>
     </open-files>
 </project-private>

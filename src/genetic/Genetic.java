@@ -10,14 +10,17 @@ public class Genetic {
     private final float MUTATE_PERCENT;
     private ArrayList<Chromossome> population;
     private final int N_POP;
-    private final long START_TIME;
+    private long START_TIME;
+    private int avg;
+    private int avgQtt;
 
     public Genetic(SparseGraph sg, float mutatePercent, int nPop) {
         this.sg = sg;
         this.population = new ArrayList();
         this.MUTATE_PERCENT = mutatePercent;
         this.N_POP = nPop;
-        this.START_TIME = System.currentTimeMillis();
+        this.avg = 0;
+        this.avgQtt = 0;
     }
 
     public void populate(int nChromo) {
@@ -31,11 +34,7 @@ public class Genetic {
     public ArrayList<Couple> selection() {
         Chromossome dad, mom;
         ArrayList<Couple> couples = new ArrayList();
-       try {
-            Collections.sort(population);
-        } catch (Exception e) {
-            System.out.println("Selection Deu esse pau no role da ordenação--->" + e.getMessage());
-        }
+        Collections.sort(population);
         for (int i = 0; i < (population.size() >> 1); i += 2) {
             dad = population.get(i);
             mom = population.get(i + 1);
@@ -50,29 +49,30 @@ public class Genetic {
     }
 
     private boolean stopCondicion(int time) {
-        try {
-            Collections.sort(population);
-        } catch (Exception e) {
-            System.out.println("StopCondicion Deu esse pau no role da ordenação--->" + e.getMessage());
-        }
-        if (actualTime() > time 
+        if (actualTime() > time
                 && this.population.get(0).missEdges.isEmpty()) {
             return true;
         } else {
             int media = 0;
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < (N_POP >> 1); i++) {
                 media += population.get(i).getFitness();
             }
-            media = media / 5;
-            if (media == population.get(0).getFitness() 
-                    && this.population.get(0).missEdges.isEmpty()) {
-                return true;
+            media = media / (N_POP >> 1);
+            if (this.avg == media) {
+                this.avgQtt++;
+                if (this.avgQtt >= N_POP*10 && population.get(0).missEdges.isEmpty()) {
+                    return true;
+                }
+            }else{
+                this.avg = media;
+                this.avgQtt = 0;
             }
         }
         return false;
     }
 
     public void perform() {
+        this.START_TIME = System.currentTimeMillis();
         this.populate(N_POP);
         ArrayList<Couple> couples;
         while (!stopCondicion(1)) {
@@ -80,15 +80,14 @@ public class Genetic {
             for (Couple couple : couples) {
                 population.addAll(couple.getChildren(sg));
             }
-            System.out.println("");
             removeTwins();
-            Collections.sort(population);
             while (population.size() > N_POP) {
                 population.remove(population.size() - 1);
             }
         }
         System.out.println(actualTime() + " mins!!");
-        System.out.println("");
+        printOut(population.get(0).chromo);
+        System.out.println("Custo: " + population.get(0).getFitness());
     }
 
     public void removeTwins() {
