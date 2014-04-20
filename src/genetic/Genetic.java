@@ -12,7 +12,7 @@ public class Genetic {
     private final int N_POP;
     private long START_TIME;
     private int avg;
-    private int avgQtt;
+    private int iterationsSameAvg;
 
     public Genetic(SparseGraph sg, float mutatePercent, int nPop) {
         this.sg = sg;
@@ -20,7 +20,7 @@ public class Genetic {
         this.MUTATE_PERCENT = mutatePercent;
         this.N_POP = nPop;
         this.avg = 0;
-        this.avgQtt = 0;
+        this.iterationsSameAvg = 0;
     }
 
     public void populate(int nChromo) {
@@ -59,13 +59,13 @@ public class Genetic {
             }
             media = media / (N_POP >> 1);
             if (this.avg == media) {
-                this.avgQtt++;
-                if (this.avgQtt >= N_POP*10 && population.get(0).missEdges.isEmpty()) {
+                this.iterationsSameAvg++;
+                if (this.iterationsSameAvg >= N_POP * 10 && population.get(0).missEdges.isEmpty()) {
                     return true;
                 }
-            }else{
+            } else {
                 this.avg = media;
-                this.avgQtt = 0;
+                this.iterationsSameAvg = 0;
             }
         }
         return false;
@@ -75,7 +75,7 @@ public class Genetic {
         this.START_TIME = System.currentTimeMillis();
         this.populate(N_POP);
         ArrayList<Couple> couples;
-        while (!stopCondicion(1)) {
+        while (!stopCondicion(15)) {
             couples = this.selection();
             for (Couple couple : couples) {
                 population.addAll(couple.getChildren(sg));
@@ -91,11 +91,7 @@ public class Genetic {
     }
 
     public void removeTwins() {
-        try {
-            Collections.sort(population);
-        } catch (Exception e) {
-            System.out.println("removeTwins Deu esse pau no role da ordenação--->" + e.getMessage());
-        }
+        Collections.sort(population);
         for (int i = 0; i < population.size(); i++) {
             for (int j = i + 1; j < population.size(); j++) {
                 Chromossome chromo1;
@@ -125,7 +121,7 @@ public class Genetic {
     public void printOut(ArrayList<String> output) {
 
         for (String s : output) {
-            System.out.print(s + " ");
+            System.out.println(s + " ");
         }
         System.out.println("");
     }

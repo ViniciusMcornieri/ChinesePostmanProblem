@@ -1,13 +1,15 @@
 package greedy;
 
 import algorithms.Dijkstra;
+import genetic.Chromossome;
 import graphs.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Greedy {
 
-    private SparseGraph sg;
-    private LinkedList<Vertex> output;
+    private final SparseGraph sg;
+    private final LinkedList<Vertex> output;
     private String endKey;
 
     public Greedy(SparseGraph sg) {
@@ -53,8 +55,8 @@ public class Greedy {
                 }
             }
             if (edgeMax != null) {
+                sg.decreaseDegree(edgeMax);
                 sg.invalidate(edgeMax.getBeginKey(), edgeMax.getEndKey());
-                sg.decreaseDegree(edgeMax);       
                 key = edgeMax.getEndKey();
             } else if (!isObjective(key)) {
                 sg.startKey = key;
@@ -69,6 +71,12 @@ public class Greedy {
     public void perform() {
         this.endKey = this.heuristic();
         visit(this.endKey);
+        ArrayList<String> chromoData = new ArrayList();
+        for (Vertex vertex : output) {
+            chromoData.add(vertex.getKey());
+        }
+        Chromossome chromo = new Chromossome(chromoData, sg, 0);
+        System.out.println("way ==> "+chromo.getFitness());
     }
 
     private boolean isObjective(String key) {
@@ -105,13 +113,14 @@ public class Greedy {
         if (v.father != null) {
             pathVisit(sg.getVertex(v.father));
             output.add(v);
-            sg.invalidate(v.father, v.getKey());            
+            sg.decreaseDegree(sg.edgeAdj(v.father, v.getKey()));
+            sg.invalidate(v.father, v.getKey());
         }
     }
 
     public void printOut() {
         for (Vertex vertex : output) {
-            System.out.print(vertex.getKey() + " ");
+            System.out.println(vertex.getKey() + " ");
         }
         System.out.println("");
     }
