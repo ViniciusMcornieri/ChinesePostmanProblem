@@ -17,7 +17,7 @@ public class ChinesePostmanProblem {
         //alg.perform();
         //alg.printOut();
         Genetic alg = new Genetic(sg, (float) 0.25, 30);
-        alg.perform();
+        alg.perform(120);
         //alg.printOut(output);
     }
     

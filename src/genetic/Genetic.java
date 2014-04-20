@@ -71,11 +71,11 @@ public class Genetic {
         return false;
     }
 
-    public void perform() {
+    public void perform(int execTime) {
         this.START_TIME = System.currentTimeMillis();
         this.populate(N_POP);
         ArrayList<Couple> couples;
-        while (!stopCondicion(15)) {
+        while (!stopCondicion(execTime)) {
             couples = this.selection();
             for (Couple couple : couples) {
                 population.addAll(couple.getChildren(sg));
