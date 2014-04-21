@@ -103,5 +103,56 @@ public class SparseGraph {
         }
     
     }
+    
+    public SparseGraph buildRestrictionsGraph() {
+        //cria vertices
+        SparseGraph restrictionsGraph = new SparseGraph();
+        this.validateAllEdges();
+        for (Edge edge : this.edgeSet) {
+            if (edge.isActive()) {
+                Vertex v = new Vertex(edge.getBeginKey() + " " + edge.getEndKey());
+                restrictionsGraph.addVertex(v);
+                this.invalidate(edge.getBeginKey(), edge.getEndKey());
+            }
+        }       
+       //cria arestas
+        Edge edge;
+        Vertex beginRestVertex;
+        Vertex endRestVertex;
+        for (Vertex vertex : this.getVertexSet()) {
+
+            for (int i = 0; i < this.getAdj(vertex.getKey()).size(); i++) {
+
+                edge = this.getAdj(vertex.getKey()).get(i);
+                beginRestVertex = restrictionsGraph.getRestrictionVertex(edge);
+
+                for (int j = i; j < this.getAdj(vertex.getKey()).size(); j++) {
+
+                    edge = this.getAdj(vertex.getKey()).get(j);
+                    endRestVertex = restrictionsGraph.getRestrictionVertex(edge);
+
+                    Edge ab = new Edge(beginRestVertex.getKey(), endRestVertex.getKey());
+                    Edge ba = new Edge(endRestVertex.getKey(), beginRestVertex.getKey());
+                    if (!ab.getBeginKey().equals(ab.getEndKey())) {
+                        restrictionsGraph.addEdge(ab);
+                        restrictionsGraph.addEdge(ba);
+                    }
+                }
+            }
+        }
+        this.validateAllEdges();
+        restrictionsGraph.validateAllEdges();
+        return restrictionsGraph;
+    }
+
+    public Vertex getRestrictionVertex(Edge edge) {
+        Vertex v = this.getVertex(edge.getBeginKey() + " " + edge.getEndKey());
+        if (v == null) {
+            v = this.getVertex(edge.getEndKey() + " " + edge.getBeginKey());
+        }
+        return v;
+    }
+
+    
 
 }
