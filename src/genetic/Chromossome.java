@@ -83,11 +83,7 @@ public final class Chromossome implements Comparable<Chromossome> {
         Edge e;
         int way = 0;
 
-        for (String s : sg.getKeys()) {
-            for (Edge edge : sg.getAdj(s)) {
-                edge.setActive(true);
-            }
-        }
+        sg.validateAllEdges();
 
         for (int i = 0; i < chromo.size() - 1; i++) {
             a = chromo.get(i);

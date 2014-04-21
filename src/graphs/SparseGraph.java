@@ -96,5 +96,12 @@ public class SparseGraph {
             v.heuristic--;
         }
     }
+    
+    public void validateAllEdges(){
+        for (Edge edge : this.edgeSet) {
+            edge.setActive(true);
+        }
+    
+    }
 
 }
