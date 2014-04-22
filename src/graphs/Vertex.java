@@ -1,5 +1,7 @@
 package graphs;
 
+import java.util.LinkedList;
+
 public class Vertex implements Comparable<Vertex> {
 
     private final String key;
@@ -9,15 +11,19 @@ public class Vertex implements Comparable<Vertex> {
     public int distance;
     public int heuristic;
     public int finish;
+    public LinkedList<String> fatherList;
 
     public Vertex(String key) {
         this.key = key;
         this.id = -1;
+        fatherList = new LinkedList();
     }
 
     public Vertex(String key, int id){
         this.key = key;
         this.id = id;
+        
+        fatherList = new LinkedList();
     }
 
     public int getId() {
