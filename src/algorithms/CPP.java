@@ -1,7 +1,5 @@
 package algorithms;
 
-import com.sun.org.apache.bcel.internal.generic.AALOAD;
-import graphs.Edge;
 import graphs.SparseGraph;
 import java.util.ArrayList;
 
@@ -20,14 +18,19 @@ public abstract class CPP {
     public void printOut() {
         int line = 0;
         for (String s : output) {
-            System.out.print(s + "->");
+            System.out.print(" ->");
+            System.out.print(s);
+            for (int i = 0; i < 4 - s.length(); i++) {
+                System.out.print(" ");
+            }
+            
             line++;
             if (line == 10) {
                 System.out.println("");
                 line = 0;
             }
         }
-        System.out.println("custo do caminho: "+sg.calculateWayCost(output));
+        System.out.println("\ncusto do caminho: " + sg.calculateWayCost(output));
     }
 
 }

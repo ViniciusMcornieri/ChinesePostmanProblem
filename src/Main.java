@@ -11,17 +11,14 @@ import psr.PSR;
 
 public class Main {
     public static void main(String[] args) throws FileNotFoundException, IOException {
-        WeightedGraphBuilder builder = new WeightedGraphBuilder(new File("./instances/basic5.txt"));
+        WeightedGraphBuilder builder = new WeightedGraphBuilder(new File("./instances/g100"));
         SparseGraph sg = builder.build();
         
-        //PSR alg = new PSR(sg);
-        //alg.perform();
-        Greedy alg = new Greedy(sg);        
-        alg.perform();
-        //alg.printOut();
+        PSR alg = new PSR(sg);
+        //Greedy alg = new Greedy(sg);        
         //Genetic alg = new Genetic(sg, (float) 0.25, 30, 1);
-        //alg.perform();
-        //alg.printOut(output);
+        alg.perform();
+        alg.printOut();
     }
     
 }

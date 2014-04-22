@@ -96,17 +96,55 @@ public class PSR extends CPP {
         init();
         x = getBest();
         visit(x);
+        buildOutput();
     }
 
-    public void printOut() {
+    public void buildOutput() {
         Vertex v = x;
         String f;
+        String first;
+        String vertex = sameVertexInThisEdges(v.getKey(), v.fatherList.getFirst());
+        String str[] = v.getKey().split(" ");
+        if (str[0].equals(vertex)) {
+            first = str[1];
+            output.add(first);
+        } else {
+            first = str[0];
+            output.add(first);
+        }
         do {
+
             System.out.println(v.getKey());
             f = v.fatherList.removeFirst();
+            vertex = sameVertexInThisEdges(v.getKey(), f);
+            str = v.getKey().split(" ");
+            if (output.get(output.size() - 1).equals(vertex)) {
+                if (str[0].equals(vertex)) {
+                    output.add(str[1]);
+                    output.add(str[0]);
+
+                } else {
+                    output.add(str[0]);
+                    output.add(str[1]);
+                }
+            } else {
+                output.add(vertex);
+            }
+
             v = rg.getVertex(f);
         } while (!v.fatherList.isEmpty());
-        System.out.println(v.getKey());
+        output.add(first);
+    }
+
+    public String sameVertexInThisEdges(String v, String u) {
+        for (String strV : v.split(" ")) {
+            for (String strU : u.split(" ")) {
+                if (strV.equals(strU) && !strV.equals(" ")) {
+                    return strV;
+                }
+            }
+        }
+        return null;
     }
 
 }
