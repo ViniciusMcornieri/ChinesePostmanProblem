@@ -11,7 +11,7 @@ import psr.PSR;
 
 public class ChinesePostmanProblem {
     public static void main(String[] args) throws FileNotFoundException, IOException {
-        WeightedGraphBuilder builder = new WeightedGraphBuilder(new File("./instances/basic5.txt"));
+        WeightedGraphBuilder builder = new WeightedGraphBuilder(new File("./instances/g100"));
         SparseGraph sg = builder.build();
         
         PSR alg = new PSR(sg);
