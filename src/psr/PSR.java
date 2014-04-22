@@ -82,6 +82,8 @@ public class PSR {
             } else {
                 next = getBestAdj(father.getKey(), NOT_WHITE);
                 next.fatherList.addFirst(father.getKey());
+                --father.heuristic;
+                --next.heuristic;
                 father = next;
             }
 
