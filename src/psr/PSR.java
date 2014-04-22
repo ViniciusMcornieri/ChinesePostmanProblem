@@ -8,8 +8,8 @@ public class PSR {
     SparseGraph rg;
     private final boolean WHITE = true;
     private final boolean NOT_WHITE = false;
-    Vertex lastFather;
-    
+    Vertex x;
+
     public PSR(SparseGraph sg) {
         this.sg = sg;
         this.rg = sg.buildRestrictionsGraph();
@@ -61,7 +61,7 @@ public class PSR {
 
     }
 
-    public Vertex visit(Vertex first) {
+    public void visit(Vertex first) {
         first.white = false;
         Vertex father = first;
         int notDone = rg.getVertexSet().size() - 1;
@@ -77,6 +77,7 @@ public class PSR {
                 --next.heuristic;
                 father = next;
             } else if (notDone == 0 && isAdjOf(father, first)) {
+                first.fatherList.addFirst(father.getKey());
                 loop = false;
             } else {
                 next = getBestAdj(father.getKey(), NOT_WHITE);
@@ -85,21 +86,23 @@ public class PSR {
             }
 
         } while (loop);
-
-        return father;
     }
 
     public void perform() {
         init();
-        lastFather = visit(getBest());
+        x = getBest();
+        visit(x);
     }
-    
-    public void printOut(){
-        Vertex v =  lastFather;
-        while(!v.fatherList.isEmpty()){
+
+    public void printOut() {
+        Vertex v = x;
+        String f;
+        do {
             System.out.println(v.getKey());
-            v = rg.getVertex(v.fatherList.removeFirst());
-        }
+            f = v.fatherList.removeFirst();
+            v = rg.getVertex(f);
+        } while (!v.fatherList.isEmpty());
+        System.out.println(v.getKey());
     }
 
 }
