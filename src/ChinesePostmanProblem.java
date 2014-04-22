@@ -15,7 +15,8 @@ public class ChinesePostmanProblem {
         SparseGraph sg = builder.build();
         
         PSR alg = new PSR(sg);
-
+        alg.perform();
+        alg.printOut();
         //Greedy alg = new Greedy(sg);        
         //alg.perform();
         //alg.printOut();
