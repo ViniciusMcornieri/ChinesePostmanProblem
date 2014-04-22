@@ -1,8 +1,9 @@
 package psr;
 
+import algorithms.CPP;
 import graphs.*;
 
-public class PSR {
+public class PSR extends CPP {
 
     SparseGraph sg;
     SparseGraph rg;
@@ -11,7 +12,7 @@ public class PSR {
     Vertex x;
 
     public PSR(SparseGraph sg) {
-        this.sg = sg;
+        super(sg);
         this.rg = sg.buildRestrictionsGraph();
     }
 
@@ -90,6 +91,7 @@ public class PSR {
         } while (loop);
     }
 
+    @Override
     public void perform() {
         init();
         x = getBest();

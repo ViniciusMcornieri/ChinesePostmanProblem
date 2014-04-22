@@ -1,26 +1,28 @@
 package genetic;
 
+import algorithms.CPP;
 import graphs.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Genetic {
+public class Genetic extends CPP {
 
-    private final SparseGraph sg;
     private final float MUTATE_PERCENT;
-    private ArrayList<Chromossome> population;
+    private final int EXEC_TIME;
     private final int N_POP;
     private long START_TIME;
+    private ArrayList<Chromossome> population;
     private int avg;
     private int iterationsSameAvg;
 
-    public Genetic(SparseGraph sg, float mutatePercent, int nPop) {
-        this.sg = sg;
+    public Genetic(SparseGraph sg, float mutatePercent, int nPop, int execTime) {
+        super(sg);
         this.population = new ArrayList();
         this.MUTATE_PERCENT = mutatePercent;
         this.N_POP = nPop;
         this.avg = 0;
         this.iterationsSameAvg = 0;
+        this.EXEC_TIME = execTime;
     }
 
     public void populate(int nChromo) {
@@ -48,8 +50,8 @@ public class Genetic {
         return ((actual - START_TIME) / 60000);//in minutes
     }
 
-    private boolean stopCondicion(int time) {
-        if (actualTime() > time
+    private boolean stopCondicion() {
+        if (actualTime() > EXEC_TIME
                 && this.population.get(0).missEdges.isEmpty()) {
             return true;
         } else {
@@ -71,11 +73,12 @@ public class Genetic {
         return false;
     }
 
-    public void perform(int execTime) {
+    @Override
+    public void perform() {
         this.START_TIME = System.currentTimeMillis();
         this.populate(N_POP);
         ArrayList<Couple> couples;
-        while (!stopCondicion(execTime)) {
+        while (!stopCondicion()) {
             couples = this.selection();
             for (Couple couple : couples) {
                 population.addAll(couple.getChildren(sg));
@@ -85,9 +88,8 @@ public class Genetic {
                 population.remove(population.size() - 1);
             }
         }
+        super.output = population.get(0).chromo;
         System.out.println(actualTime() + " mins!!");
-        printOut(population.get(0).chromo);
-        System.out.println("Custo: " + population.get(0).getFitness());
     }
 
     public void removeTwins() {
@@ -118,12 +120,6 @@ public class Genetic {
         return true;
     }
 
-    public void printOut(ArrayList<String> output) {
 
-        for (String s : output) {
-            System.out.println(s + " ");
-        }
-        System.out.println("");
-    }
 
 }

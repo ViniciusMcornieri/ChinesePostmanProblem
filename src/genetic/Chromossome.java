@@ -14,22 +14,22 @@ public final class Chromossome implements Comparable<Chromossome> {
 
     public Chromossome(SparseGraph sg) {
         this.chromo = this.generateChromo(sg);
-        this.costWay = 0;
-        this.missEdges = new ArrayList<>();
-        //removeRedundancy();
-        calculateCostWayMissEdges(sg);
+        this.costWay = sg.calculateWayCost(chromo);
+        this.missEdges = sg.calculateMissEdges();
+        //removeRedundancy()
         this.fitness = fitness();
     }
 
     public Chromossome(ArrayList<String> chromo, SparseGraph sg, float percent) {
         this.chromo = chromo;
-        this.costWay = 0;
-        this.missEdges = new ArrayList<>();
+        this.costWay = sg.calculateWayCost(chromo);
+        this.missEdges = sg.calculateMissEdges();
         removeRedundancy();
-        calculateCostWayMissEdges(sg);
         if (percent * 100 > new Random().nextInt(100)) {
             mutate();
-            calculateCostWayMissEdges(sg);
+            this.costWay = sg.calculateWayCost(chromo);
+            this.missEdges = sg.calculateMissEdges();
+
         }
         this.fitness = fitness();
     }
@@ -76,31 +76,6 @@ public final class Chromossome implements Comparable<Chromossome> {
         int ft = 0;
         ft = (this.missEdges.size() + 1) * this.costWay;
         return ft;
-    }
-
-    private void calculateCostWayMissEdges(SparseGraph sg) {
-        String a, b;
-        Edge e;
-        int way = 0;
-
-        sg.validateAllEdges();
-
-        for (int i = 0; i < chromo.size() - 1; i++) {
-            a = chromo.get(i);
-            b = chromo.get(i + 1);
-            e = sg.edgeAdj(a, b);
-            sg.invalidate(a, b);
-            way += e.getWeight();
-        }
-        this.costWay = way;
-
-        for (String s : sg.getKeys()) {
-            for (Edge edge : sg.getAdj(s)) {
-                if (edge.isActive()) {
-                    missEdges.add(edge);
-                }
-            }
-        }
     }
 
     public ArrayList<String> generateChromo(SparseGraph sg) {
@@ -210,7 +185,7 @@ public final class Chromossome implements Comparable<Chromossome> {
             return 1;
         } else {
             return 0;
-    
+
         }
     }
 

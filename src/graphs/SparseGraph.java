@@ -96,14 +96,14 @@ public class SparseGraph {
             v.heuristic--;
         }
     }
-    
-    public void validateAllEdges(){
+
+    public void validateAllEdges() {
         for (Edge edge : this.edgeSet) {
             edge.setActive(true);
         }
-    
+
     }
-    
+
     public SparseGraph buildRestrictionsGraph() {
         //cria vertices
         SparseGraph restrictionsGraph = new SparseGraph();
@@ -114,8 +114,8 @@ public class SparseGraph {
                 restrictionsGraph.addVertex(v);
                 this.invalidate(edge.getBeginKey(), edge.getEndKey());
             }
-        }       
-       //cria arestas
+        }
+        //cria arestas
         Edge edge;
         Vertex beginRestVertex;
         Vertex endRestVertex;
@@ -153,6 +153,33 @@ public class SparseGraph {
         return v;
     }
 
-    
+    public int calculateWayCost(ArrayList<String> circuit) {
+        String a, b;
+        Edge e;
+        int way = 0;
+
+        this.validateAllEdges();
+
+        for (int i = 0; i < circuit.size() - 1; i++) {
+            a = circuit.get(i);
+            b = circuit.get(i + 1);
+            e = this.edgeAdj(a, b);
+            this.invalidate(a, b);
+            way += e.getWeight();
+        }
+        return way;
+    }
+
+    public ArrayList<Edge> calculateMissEdges() {
+        ArrayList<Edge> missEdges = new ArrayList();
+        for (String s : this.getKeys()) {
+            for (Edge edge : this.getAdj(s)) {
+                if (edge.isActive()) {
+                    missEdges.add(edge);
+                }
+            }
+        }
+        return missEdges;
+    }
 
 }

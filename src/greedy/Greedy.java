@@ -1,21 +1,19 @@
 package greedy;
 
+import algorithms.CPP;
 import algorithms.Dijkstra;
-import genetic.Chromossome;
 import graphs.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
 
-public class Greedy {
+public class Greedy extends CPP {
 
-    private final SparseGraph sg;
-    private final LinkedList<Vertex> output;
+    
     private String endKey;
 
     public Greedy(SparseGraph sg) {
-        this.sg = sg;
-        this.output = new LinkedList();
+        super(sg);
     }
+
+
 
     private String heuristic() {
         int heuristicWeight = 0;
@@ -42,7 +40,7 @@ public class Greedy {
         boolean stop = false;
         String key = startKey;
         while (!stop) {
-            output.add(sg.getVertex(key));
+            output.add(key);
             int max = 0;
             Edge edgeMax = null;
             for (Edge e : sg.getAdj(key)) {
@@ -68,15 +66,11 @@ public class Greedy {
         }
     }
 
+    @Override
     public void perform() {
         this.endKey = this.heuristic();
         visit(this.endKey);
-        ArrayList<String> chromoData = new ArrayList();
-        for (Vertex vertex : output) {
-            chromoData.add(vertex.getKey());
-        }
-        Chromossome chromo = new Chromossome(chromoData, sg, 0);
-        System.out.println("way ==> "+chromo.getFitness());
+    
     }
 
     private boolean isObjective(String key) {
@@ -112,16 +106,10 @@ public class Greedy {
     private void pathVisit(Vertex v) {
         if (v.father != null) {
             pathVisit(sg.getVertex(v.father));
-            output.add(v);
+            output.add(v.getKey());
             sg.decreaseDegree(sg.edgeAdj(v.father, v.getKey()));
             sg.invalidate(v.father, v.getKey());
         }
     }
 
-    public void printOut() {
-        for (Vertex vertex : output) {
-            System.out.println(vertex.getKey() + " ");
-        }
-        System.out.println("");
-    }
 }
