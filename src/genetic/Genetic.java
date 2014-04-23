@@ -111,6 +111,8 @@ public class Genetic extends CPP {
         if (chromo1.getFitness() != chromo2.getFitness()
                 || chromo1.missEdges.size() != chromo2.missEdges.size()) {
             return false;
+        }else if(chromo1.chromo.size()!=chromo2.chromo.size()){
+            return false;
         }
         for (int i = 0; i < chromo1.chromo.size(); i++) {
             if (!chromo1.chromo.get(i).equals(chromo2.chromo.get(i))) {
